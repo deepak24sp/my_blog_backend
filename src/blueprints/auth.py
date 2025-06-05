@@ -6,3 +6,7 @@ blueprints =  Blueprint("auth",__name__)
 @blueprints.route("/register",methods = ['POST'])
 def register():
     return Auth(request = request).register()
+
+@blueprints.route("/login",methods = ["POST"])
+def login():
+    return Auth(request=request).login()
