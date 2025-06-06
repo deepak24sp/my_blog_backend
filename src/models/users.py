@@ -8,3 +8,4 @@ class User(db.Model):
     username_name = Column(String(30),unique=True,nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     password = db.relationship("UserPassword", back_populates="user", uselist=False)
+    blogs = db.relationship("Blog", back_populates="user", cascade="all, delete-orphan")
