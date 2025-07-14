@@ -69,9 +69,29 @@ class Auth:
 
         response = {
             "body": {
+                "status":True,
                 "message": "Login successful",
                 "access_token": token,
                 "token_type": "bearer"
             }
         }
         return jsonify(response), 200
+    
+    def verify(self):
+        token = self.request.get_json()
+        user = verify_token(token)
+        if user:
+            user_id = user.user_id
+            user = db.session.query(User).filter(id = user_id).first()
+            response = {
+            "body": {
+                "status":True,
+                "message": "Login successful",
+                "user_id":user_id,
+                "user_name":user.username_name,
+                "display_name":user.display_name
+            }
+        }
+        return jsonify(response), 200
+            
+        return None

@@ -41,21 +41,9 @@ class Blog:
     
     def blog_by_id(self, id):
         try:
-            # Query to fetch blog and its user's display name
-            # result = (
-            #     db.session.query(
-            #         BlogModel,
-            #         User.display_name.label("user_display_name")
-            #     )
-            #     .join(User, BlogModel.user_id == User.id)
-            #     .filter(BlogModel.id == id)
-            #     .first()
-            # )
             result = (
                 db.session.query(BlogModel,User).join(User).filter(BlogModel.id == id).first()
             )
-
-            # If result is found, unpack and format the response
             print("QUERY RESULT:", result)
             if result:
                 blog, user = result

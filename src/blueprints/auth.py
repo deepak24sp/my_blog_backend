@@ -10,3 +10,7 @@ def register():
 @blueprints.route("/login",methods = ["POST"])
 def login():
     return Auth(request=request).login()
+
+@blueprints.route("/verify",methods = ['POST'])
+def verify():
+    return Auth(request=request).verify()
