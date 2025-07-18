@@ -78,11 +78,13 @@ class Auth:
         return jsonify(response), 200
     
     def verify(self):
+        
         token = self.request.get_json()
-        user = verify_token(token)
-        if user:
-            user_id = user.user_id
-            user = db.session.query(User).filter(id = user_id).first()
+        user_id = verify_token(token['token'])
+        print("+++++++++++",user_id,token)
+        if user_id:
+            # user_id = user.user_id
+            user = db.session.query(User).filter_by(id=user_id).first()
             response = {
             "body": {
                 "status":True,
@@ -90,8 +92,9 @@ class Auth:
                 "user_id":user_id,
                 "user_name":user.username_name,
                 "display_name":user.display_name
+                }
             }
-        }
-        return jsonify(response), 200
+            print("--",response)
+            return jsonify(response), 200
             
         return None
