@@ -44,7 +44,7 @@ class Blog:
             result = (
                 db.session.query(BlogModel,User).join(User).filter(BlogModel.id == id).first()
             )
-            print("QUERY RESULT:", result)
+            # print("QUERY RESULT:", result)
             if result:
                 blog, user = result
 
@@ -78,3 +78,21 @@ class Blog:
                     "error": "An unexpected error occurred while retrieving the blog."
                 }
             }), 500
+        
+    def add_blog(self,user_id):
+        body = self.request.get_json()
+        
+        blog = BlogModel(  
+            title=body['title'],
+            content=body['content'],
+            tags=body.get('tags', []),
+            user_id=user_id  
+        )
+
+        db.session.add(blog)
+        db.session.commit()
+        return jsonify({
+            "status": True,
+            "message": "blog posted successfully",
+            "blog_id": blog.id  
+        }), 201
