@@ -16,7 +16,7 @@ def blog_by_id():
         response ={ 
             "body": {
                 "status": False,
-                "error": "id argumnet is missing"
+                "error": "the Blog may be removed "
             } }
         return response
     return Blog(request=request).blog_by_id(blog_id)

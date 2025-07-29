@@ -2,7 +2,7 @@ import jwt
 from datetime import datetime, timedelta
 from src.config import FlaskAppConfig
 
-def generate_token(user_id, expires_in=3600):
+def generate_token(user_id, expires_in=86400 ):
     payload = {
         "user_id": user_id,
         "exp": datetime.utcnow() + timedelta(seconds=expires_in),
