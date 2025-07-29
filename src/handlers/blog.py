@@ -2,6 +2,7 @@ from flask import jsonify
 from src.db import db
 from src.models.blog import Blog as BlogModel
 from src.models.users import User 
+from src.utils.response import make_response
 
 class Blog:
     def __init__(self, request):
@@ -17,7 +18,7 @@ class Blog:
                 User.display_name.label("user_display_name")  
             )
             .join(User, BlogModel.user_id == User.id)
-            .limit(5)
+            .limit(10)
             .all()
         )
 
@@ -28,16 +29,14 @@ class Blog:
                 "title": blog.title,
                 "tags": blog.tags,
                 "user_id": blog.user_id,
-                "user_name": blog.user_display_name  # label matches above
+                "user_name": blog.user_display_name 
             })
 
-        response = {
-            "body": {
-                "status": True,
-                "data": data
-            }
-        }
-        return jsonify(response), 200
+        return make_response(
+            success=True,
+            message="fetched the blog succesfully",
+            data=data
+        )
     
     def blog_by_id(self, id):
         try:
@@ -47,11 +46,7 @@ class Blog:
             # print("QUERY RESULT:", result)
             if result:
                 blog, user = result
-
-                return jsonify({
-                    "body": {
-                        "status": True,
-                        "blog": {
+                blog = {
                             "id": blog.id,
                             "title": blog.title,
                             "tags": blog.tags,
@@ -59,40 +54,52 @@ class Blog:
                             "content": blog.content,
                             "user_name": user.display_name
                         }
-                    }
-                }), 200
+                return make_response(
+                    success=True,
+                    message="succesfully fetched the blog",
+                    data=blog
+                )
+            
+            return make_response(
+                success=False,
+                message="blog not found",
+                status_code= 404
+                )
 
-            # Blog not found
-            return jsonify({
-                "body": {
-                    "status": False,
-                    "error": f"Blog with id {id} not found"
-                }
-            }), 404
 
         except Exception as e:
             print(f"[ERROR] Exception in blog_by_id: {e}")
-            return jsonify({
-                "body": {
-                    "status": False,
-                    "error": "An unexpected error occurred while retrieving the blog."
-                }
-            }), 500
+            return make_response(
+                success=False,
+                message="error occured while getting Blog",
+                error="{e}",
+                status_code=500
+            )
         
     def add_blog(self,user_id):
         body = self.request.get_json()
         
-        blog = BlogModel(  
-            title=body['title'],
-            content=body['content'],
-            tags=body.get('tags', []),
-            user_id=user_id  
-        )
+        try:    
+            blog = BlogModel(  
+                title=body['title'],
+                content=body['content'],
+                tags=body.get('tags', []),
+                user_id=user_id  
+            )
 
-        db.session.add(blog)
-        db.session.commit()
-        return jsonify({
-            "status": True,
-            "message": "blog posted successfully",
-            "blog_id": blog.id  
-        }), 201
+            db.session.add(blog)
+            db.session.commit()
+            return make_response(
+                success=True,
+                message="successfully posted ",
+                status_code=201
+            )
+        
+        except Exception as e:
+            print(f"[ERROR] Exception in blog_by_id: {e}")
+            return make_response(
+                success=False,
+                message="error occured while getting Blog",
+                error="{e}",
+                status_code=500
+            )
